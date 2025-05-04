@@ -63,18 +63,18 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto bg-white shadow-sm max-w-7xl">
-        <div className="flex flex-col md:flex-row">
-          {/* Sidebar */}
-          <Sidebar />
+    <div className="h-screen w-screen bg-gray-50 flex items-center justify-center p-4 md:p-6 overflow-hidden">
+      <div className="w-full h-full max-w-[84rem] bg-white rounded-xl shadow-sm flex flex-col md:flex-row relative overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar />
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Header */}
-            <Header title={`Welcome, ${user?.firstName || "Client"}`} />
+        {/* Main Content */}
+        <div className="flex-1 md:ml-6 flex flex-col overflow-hidden">
+          {/* Header */}
+          <Header title={`Welcome, ${user?.firstName || "Client"}`} />
 
-            {/* Content */}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto">
             <div className="grid md:grid-cols-2 gap-6 p-6">
               {/* Create Ticket */}
               <div className="border rounded-lg p-6">
@@ -194,14 +194,16 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Dialogs and Toasts */}
+      {/* Dialogs and Toasts (positioned absolutely) */}
+      <div className="absolute bottom-0 right-0 z-50">
+        <Toaster />
+      </div>
+      
       <TicketLimitWarning
         isOpen={ticketLimitWarningOpen}
         onClose={() => setTicketLimitWarningOpen(false)}
         remainingTickets={5}
       />
-
-      <Toaster />
     </div>
   )
 }

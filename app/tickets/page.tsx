@@ -84,18 +84,18 @@ export default function TicketsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto bg-white shadow-sm max-w-7xl">
-        <div className="flex flex-col md:flex-row">
-          {/* Sidebar */}
-          <Sidebar activePage="tickets" />
+    <div className="h-screen w-screen bg-gray-50 flex items-center justify-center p-4 md:p-6 overflow-hidden">
+      <div className="w-full h-full max-w-[84rem] bg-white rounded-xl shadow-sm flex flex-col md:flex-row relative overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar activePage="tickets" />
 
-          {/* Main Content */}
-          <div className="flex-1">
-            {/* Header */}
-            <Header title="Tickets" />
+        {/* Main Content */}
+        <div className="flex-1 md:ml-6 flex flex-col overflow-hidden">
+          {/* Header */}
+          <Header title="Tickets" />
 
-            {/* Content */}
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">All Tickets</h2>
@@ -107,7 +107,7 @@ export default function TicketsPage() {
                 </Link>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4 flex flex-col gap-1">
                 {tickets.map((ticket) => (
                   <Link href={`/ticket/${ticket.id}`} key={ticket.id}>
                     <div className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer">
@@ -133,7 +133,10 @@ export default function TicketsPage() {
         </div>
       </div>
 
-      <Toaster />
+      {/* Toasts (positioned absolutely) */}
+      <div className="absolute bottom-0 right-0 z-50">
+        <Toaster />
+      </div>
     </div>
   )
 }

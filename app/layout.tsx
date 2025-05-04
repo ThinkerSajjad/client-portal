@@ -22,7 +22,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClerkProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-            {children}
+
+            <div className="bg-gray-50 p-6]">{children}</div>
           </ThemeProvider>
         </ClerkProvider>
       </body>

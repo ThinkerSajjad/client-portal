@@ -10,8 +10,19 @@ import { Sidebar } from "@/components/sidebar"
 import { ChatFileUpload } from "@/components/chat-file-upload"
 import { Header } from "@/components/header"
 
+// Define proper types for messages
+interface Message {
+  id: number;
+  sender: string;
+  avatar: string;
+  content: string;
+  time: string;
+  isUser: boolean;
+  attachments?: string[];
+}
+
 export default function ChatPage() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: "Support Agent",
@@ -121,123 +132,124 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="mx-auto bg-white shadow-sm max-w-7xl h-screen flex flex-col">
-        <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
-          {/* Sidebar */}
-          <Sidebar activePage="chat" />
+    <div className="h-screen w-screen bg-gray-50 flex items-center justify-center p-4 md:p-6 overflow-hidden">
+      <div className="w-full h-full max-w-[84rem] bg-white rounded-xl shadow-sm flex flex-col md:flex-row relative overflow-hidden">
+        {/* Sidebar */}
+        <Sidebar activePage="chat" />
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            {/* Header */}
-            <Header title="Chat" />
+        {/* Main Content */}
+        <div className="flex-1 md:ml-6 flex flex-col overflow-hidden">
+          {/* Header */}
+          <Header title="Chat" />
 
-            {/* Chat Messages */}
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="space-y-6">
-                {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
-                    <div className={`flex gap-3 max-w-[80%] ${message.isUser ? "flex-row-reverse" : ""}`}>
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={message.avatar || "/placeholder.svg"} />
-                        <AvatarFallback>{message.sender[0]}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className={`font-bold text-sm ${message.isUser ? "text-right" : ""}`}>
-                            {message.isUser ? "You" : message.sender}
-                          </p>
-                          <span className="text-xs text-gray-500">{message.time}</span>
-                        </div>
-                        <div
-                          className={`rounded-lg p-3 ${
-                            message.isUser ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          <p>{message.content}</p>
-                          {message.attachments && message.attachments.length > 0 && (
-                            <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                              {message.attachments.map((file, index) => (
-                                <div key={index} className="flex items-center gap-2 text-sm">
-                                  <Paperclip className="h-3 w-3" />
-                                  <span>{file}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+          {/* Chat Messages - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-6">
+              {messages.map((message) => (
+                <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
+                  <div className={`flex gap-3 max-w-[80%] ${message.isUser ? "flex-row-reverse" : ""}`}>
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={message.avatar || "/placeholder.svg"} />
+                      <AvatarFallback>{message.sender[0]}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className={`font-bold text-sm ${message.isUser ? "text-right" : ""}`}>
+                          {message.isUser ? "You" : message.sender}
+                        </p>
+                        <span className="text-xs text-gray-500">{message.time}</span>
+                      </div>
+                      <div
+                        className={`rounded-lg p-3 ${
+                          message.isUser ? "bg-indigo-600 text-white" : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        <p>{message.content}</p>
+                        {message.attachments && message.attachments.length > 0 && (
+                          <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                            {message.attachments.map((file, index) => (
+                              <div key={index} className="flex items-center gap-2 text-sm">
+                                <Paperclip className="h-3 w-3" />
+                                <span>{file}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-            </div>
-
-            {/* Message Input */}
-            <div className="border-t p-4">
-              {chatAttachments.length > 0 && (
-                <div className="mb-2 p-2 bg-gray-50 rounded-md">
-                  {chatAttachments.map((fileName, index) => (
-                    <div key={index} className="flex items-center text-sm text-gray-600">
-                      <Paperclip className="h-4 w-4 mr-2" />
-                      {fileName}
-                    </div>
-                  ))}
                 </div>
-              )}
-              <div className="flex items-center gap-2">
-                <ChatFileUpload onFileUploaded={handleChatFileUploaded} />
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
-                  className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault()
-                      handleSendMessage()
-                    }
-                  }}
-                />
-                <Button
-                  onClick={handleSendMessage}
-                  disabled={isLoading}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-800"
-                >
-                  {isLoading ? (
-                    <svg
-                      className="animate-spin h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                  ) : (
-                    <Send className="h-5 w-5" />
-                  )}
-                </Button>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* Message Input - Fixed at bottom */}
+          <div className="border-t p-4 bg-white">
+            {chatAttachments.length > 0 && (
+              <div className="mb-2 p-2 bg-gray-50 rounded-md">
+                {chatAttachments.map((fileName, index) => (
+                  <div key={index} className="flex items-center text-sm text-gray-600">
+                    <Paperclip className="h-4 w-4 mr-2" />
+                    {fileName}
+                  </div>
+                ))}
               </div>
+            )}
+            <div className="flex items-center gap-2">
+              <ChatFileUpload onFileUploaded={handleChatFileUploaded} />
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSendMessage()
+                  }
+                }}
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={isLoading}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+              >
+                {isLoading ? (
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <Send className="h-5 w-5" />
+                )}
+              </Button>
             </div>
           </div>
         </div>
       </div>
 
-      <Toaster />
+      {/* Toasts (positioned absolutely) */}
+      <div className="absolute bottom-0 right-0 z-50">
+        <Toaster />
+      </div>
     </div>
   )
 }
